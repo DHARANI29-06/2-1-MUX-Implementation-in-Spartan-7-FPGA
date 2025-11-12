@@ -15,7 +15,10 @@ To design, synthesize, and implement a 4:1 Multiplexer using Verilog HDL on a Sp
 ---
 
 ## Theory
+
 A **4:1 multiplexer** selects one of four data inputs (i0..i3) and routes it to a single output y, based on two select lines sel[1:0].
+
+---
 
 **Truth table**
 
@@ -27,6 +30,7 @@ A **4:1 multiplexer** selects one of four data inputs (i0..i3) and routes it to 
 | 1  | 1  | D3  |
 
 **Logic Diagram:**
+
 <img width="463" height="368" alt="image" src="https://github.com/user-attachments/assets/7e2b9a82-5482-4265-8007-4c3761706314" />
 
 ---
@@ -58,20 +62,42 @@ A **4:1 multiplexer** selects one of four data inputs (i0..i3) and routes it to 
 
 ```verilog
 `timescale 1ns / 1ps
-module mux4to1 (
-    input  wire i0,
-    input  wire i1,
-    input  wire i2,
-    input  wire i3,
-    input  wire [1:0] sel,
-    output wire y
-);
-    //
---
---
---
 
-   endmodule
+module mux4(I,S,y);
+input [3:0]I;
+input [1:0]S;
+output y;
+wire [4:1]W;
+and g1(W[1],(~S[0]),(~S[1]),I[0]);
+and g2(W[2],(~S[0]),S[1],I[1]);
+and g3(W[3],S[0],(~S[1]),I[2]);
+and g4(W[4],S[0],S[1],I[3]);
+or g5(y,W[1],W[2],W[3],W[4]);
+endmodule
+
+module mux4_tb;
+reg [3:0]I;
+reg [1:0]S;
+wire y;
+mux4 uut(I,S,y);
+initial
+begin
+I=4'b1011;
+S=2'b00;
+#10;
+$display("selection is %b %b , output is %b",S[1],S[0],y);
+S=2'b01;
+#10;
+$display("selection is %b %b , output is %b",S[1],S[0],y);
+S=2'b10;
+#10;
+$display("selection is %b %b , output is %b",S[1],S[0],y);
+S=2'b11;
+#10;
+$display("selection is %b %b , output is %b",S[1],S[0],y);
+$finish;
+end 
+endmodule
 ```
 ## Constraint file for Seven-Segment Display
 ```
@@ -85,7 +111,7 @@ set_property -dict {PACKAGE_PIN G1 IOSTANDARD LVCMOS33} [get_ports {y}]
 ```
 ## FPGA Implementation Output
 
-![Mux](https://github.com/user-attachments/assets/40586d2d-e669-4d67-9be1-f481b4ff9cf2)
+![WhatsApp Image 2025-11-12 at 09 19 44_ffedd949](https://github.com/user-attachments/assets/cb960004-8a36-4fe0-a024-6b04c67b9698)
 
 ---
 
